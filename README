@@ -1,3 +1,4 @@
 docker image for abra - Assembly Based ReAligner
 
-'abra' is aliased to run java -jar <ABRAFILE>.jar for convenience, so you can just run 'abra --params ...'
+run with "/usr/bin/java -jar /opt/abra/abra-0.97-SNAPSHOT-jar-with-dependencies.jar --PARAMS"
+
