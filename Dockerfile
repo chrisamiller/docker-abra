@@ -1,19 +1,20 @@
-FROM openjdk:7-jre
-MAINTAINER Chris Miller <c.a.miller@wustl.edu>
-LABEL abra - Assembly Based ReAligner
+FROM  alpine
+LABEL MAINTAINER "Lisle Mose <lmose@email.unc.edu>"
+LABEL MAINTAINER "Alan Hoyle <alanh@unc.edu>"
 
-RUN apt-get -y update && apt-get install -y wget bwa
+RUN apk -U add \
+     libc6-compat \ 
+     openjdk8
+
+ARG ABRA2_VERSION=2.24
+ENV ABRA2_VERSION ${ABRA2_VERSION}
+ENV JAVA_OPTS "-Xmx16G"
+
 RUN mkdir /opt/abra/
-RUN cd /opt/abra/ && wget https://github.com/mozack/abra/releases/download/v0.97/abra-0.97-SNAPSHOT-jar-with-dependencies.jar
+ADD https://github.com/mozack/abra2/releases/download/v${ABRA2_VERSION}/abra2-${ABRA2_VERSION}.jar /opt/abra/
 
-# needed for MGI data mounts
-RUN apt-get update && apt-get install -y libnss-sss && apt-get clean all
+RUN chmod 755 /opt/abra/abra2-${ABRA2_VERSION}.jar && \
+    ln -s /opt/abra/abra2-${ABRA2_VERSION}.jar /opt/abra/abra2.jar 
 
-#set timezone to CDT
-#LSF: Java bug that need to change the /etc/timezone.
-#/etc/localtime is not enough.
-RUN ln -sf /usr/share/zoneinfo/America/Chicago /etc/localtime && \
-    echo "America/Chicago" > /etc/timezone && \
-    dpkg-reconfigure --frontend noninteractive tzdata
-
-CMD "/bin/bash"
+# ENTRYPOINT [ "java", "-jar", "/abra2.jar" ]
+# CMD [ --help ]
